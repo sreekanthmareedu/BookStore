@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using BookStoreAPI.Model;
 using BookStoreAPI.Model.DTO;
+using BookStoreAPI.Model.DTO.BooksDTO;
 using BookStoreAPI.Repository.IRepository;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
@@ -8,35 +9,41 @@ using System.Net;
 namespace BookStoreAPI.Controllers
 {
     [Controller]
-    [Route("/api/Author")]
-    public class AuthorController : ControllerBase
+    [Route("/api/Book")]
+    public class BookController : ControllerBase
     {
 
         private readonly IAuthorRepository _dbAuthor;
+        private readonly IBookRepository _dbBook;
+        private readonly IPublisherRepository _dbPublisher;
         private readonly IMapper _mapper;
         protected APIResponses responses;
 
-        public AuthorController(IMapper mapper, IAuthorRepository dbAuthor)
+
+
+        public BookController(IMapper mapper, IAuthorRepository dbAuthor ,IPublisherRepository dbPublisher, IBookRepository dbBook)
         {
             _mapper = mapper;
             _dbAuthor = dbAuthor;
+            _dbBook = dbBook;
+            _dbPublisher = dbPublisher;
             responses = new APIResponses();
         }
 
 
         //=====================================================================================
-        //====================================Get All Author Info =========================
+        //====================================Get All Books Info =========================
 
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<APIResponses>> GetAllAuthor()
+        public async Task<ActionResult<APIResponses>> GetAllBooks()
         {
             try
             {
                 // Publisher publisher = await _dbPublisher.GetAllAsync();
 
-                IEnumerable<AuthorDTO> pub = _mapper.Map<List<AuthorDTO>>(await _dbAuthor.GetAllAsync());
+                IEnumerable<BookDTO> pub = _mapper.Map<List<BookDTO>>(await _dbBook.GetAllAsync());
                 responses.StatusCode = HttpStatusCode.OK;
                 responses.Result = pub;
                 return Ok(responses);
@@ -53,14 +60,14 @@ namespace BookStoreAPI.Controllers
         }
 
         //===================================================================================
-        //======================== Get single Author ======================================
+        //======================== Get Individual Book Info ======================================
 
-        [HttpGet("{id:int}", Name = "Author")]
+        [HttpGet("{id:int}", Name = "Book")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         
-        public async Task<ActionResult<APIResponses>> GetPublisher(int id)
+        public async Task<ActionResult<APIResponses>> GetBook(int id)
         {
             try
             {
@@ -72,16 +79,16 @@ namespace BookStoreAPI.Controllers
                     return BadRequest(responses);
 
                 }
-                var author = await _dbAuthor.GetAsync(u => u.Id == id);
+                var book = await _dbBook.GetAsync(u => u.Id == id);
 
-                if (author == null)
+                if (book == null)
                 {
                     responses.Result = "Invalid ID";
                     responses.StatusCode = HttpStatusCode.OK;
                     return Ok(responses);
                    
                 }
-                responses.Result = _mapper.Map<AuthorDTO>(author);
+                responses.Result = _mapper.Map<BookDTO>(book);
                 responses.StatusCode = HttpStatusCode.OK;
                 return Ok(responses);
 
@@ -98,14 +105,14 @@ namespace BookStoreAPI.Controllers
 
 
         //=========================================================================================
-        //========================== Create Author ==========================================
+        //========================== Create Book ==========================================
 
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status201Created)]
        
-        public async Task<ActionResult<APIResponses>> CreateAuthor([FromBody] AuthorCreateDTO dto)
+        public async Task<ActionResult<APIResponses>> CreateBook([FromBody]BookCreateDTO dto)
 
         {
 
@@ -116,16 +123,32 @@ namespace BookStoreAPI.Controllers
                 {
 
                 }
-                if (await _dbAuthor.GetAsync(u => u.Name.ToLower() == dto.Name.ToLower()) != null)
+                if (await _dbBook.GetAsync(u => u.Id == dto.Id) != null)
                 {
-                    ModelState.AddModelError("Custom Error", "Name already Exist");
+                    ModelState.AddModelError("Custom Error", "Book already Exist");
                     return BadRequest(ModelState);
                 }
-                Author author = _mapper.Map<Author>(dto);
-                await _dbAuthor.CreateAsync(author);
-                responses.Result = _mapper.Map<AuthorDTO>(author);
+                var PublisherID = await _dbPublisher.GetAsync(u=>u.Id == dto.publishers);
+                var AuthorID = await _dbAuthor.GetAsync(u=>u.Id==dto.authors);
+
+        
+                if(PublisherID == null)
+                {
+                    ModelState.AddModelError("Custom Error", "PublisherID is Invalid");
+                    return BadRequest(ModelState);
+                }
+                if (AuthorID == null)
+                {
+                    ModelState.AddModelError("Custom Error", "AuthorID is Invalid");
+                    return BadRequest(ModelState);
+                }
+
+                Books book =  _mapper.Map<Books>(dto);
+                
+                await _dbBook.CreateAsync(book);
+                responses.Result = _mapper.Map<BookDTO>(book);
                 responses.StatusCode = HttpStatusCode.OK;
-                return CreatedAtRoute("Author", new { id = author.Id }, responses);
+                return CreatedAtRoute("Book", new { id = dto.Id }, responses);
             }
             catch (Exception ex)
             {
@@ -139,14 +162,14 @@ namespace BookStoreAPI.Controllers
         }
 
         //=================================================================================================
-        //=========================Update Author info ===================================================
+        //=========================Update Book info ===================================================
 
         [HttpPut]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
 
-        public async Task<ActionResult<APIResponses>> UpdateAuthor(int id, [FromBody] AuthorUpdateDTO dto)
+        public async Task<ActionResult<APIResponses>> UpdateBook(int id, [FromBody] BookUpdateDTO dto)
         {
             try
             {
@@ -157,12 +180,22 @@ namespace BookStoreAPI.Controllers
                     return BadRequest(responses);
 
                 }
-                Author author = _mapper.Map<Author>(dto);
+                if (await _dbPublisher.GetAsync(u => u.Id == dto.Publisher) == null)
+                {
+                    ModelState.AddModelError("Custom Error", "PublisherID is Invalid");
+                    return BadRequest(ModelState);
+                }
+                if (await _dbAuthor.GetAsync(u => u.Id == dto.Author) == null)
+                {
+                    ModelState.AddModelError("Custom Error", "AuthorID is Invalid");
+                    return BadRequest(ModelState);
+                }
+                Books book = _mapper.Map<Books>(dto);
 
-                await _dbAuthor.UpdateAsync(author);
+                await _dbBook.UpdateAsync(book);
                 
                 responses.StatusCode = HttpStatusCode.NoContent;
-                responses.Result = "Author with Id : " + id + "  Updated successfully";
+                responses.Result = "Book with Id : " + id + "  Updated successfully";
                 return Ok(responses);
                 
 
@@ -176,13 +209,13 @@ namespace BookStoreAPI.Controllers
         }
 
         //===========================================================================================================================
-        //==================================== Delete the Author ========================================================
+        //==================================== Delete the Book ========================================================
         [HttpDelete]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         
 
-        public async Task<ActionResult<APIResponses>> RemoveAuthor(int Id)
+        public async Task<ActionResult<APIResponses>> RemoveBook(int Id)
         {
             try
             {
@@ -192,8 +225,8 @@ namespace BookStoreAPI.Controllers
                     responses.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(responses);
                 }
-                Author author = await _dbAuthor.GetAsync(u => u.Id == Id);
-                if (author == null)
+                Books book = await _dbBook.GetAsync(u => u.Id == Id);
+                if (book == null)
                 {
                     responses.Result = "Invalid ID";
                     responses.StatusCode = HttpStatusCode.BadRequest;
@@ -201,10 +234,10 @@ namespace BookStoreAPI.Controllers
 
 
                 }
-                await _dbAuthor.RemoveAsync(author);
+                await _dbBook.RemoveAsync(book);
                 responses.IsSuccess = true;
                 responses.StatusCode = HttpStatusCode.NoContent;
-                responses.Result = "Author with Id :" + Id + "  deleted successfully";
+                responses.Result = "Book with Id :" + Id + "  deleted successfully";
                 return Ok(responses);
             }
             catch (Exception ex)

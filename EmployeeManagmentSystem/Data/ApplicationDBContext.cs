@@ -1,4 +1,5 @@
 ﻿using BookStoreAPI.Model;
+using BookStoreAPI.Model.DTO.BooksDTO;
 using Microsoft.EntityFrameworkCore;
 
 namespace BookStoreAPI.Data
@@ -16,6 +17,12 @@ namespace BookStoreAPI.Data
         public DbSet<Publisher> Publishers { get; set; }
 
         public DbSet<Author> Authors { get; set; }
+
+        public DbSet<Books> Books { get; set; }
+
+        public DbSet<User> Users { get; set; }
+
+       
         
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

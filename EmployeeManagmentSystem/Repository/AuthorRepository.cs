@@ -5,7 +5,7 @@ using System.Linq.Expressions;
 
 namespace BookStoreAPI.Repository
 {
-    public class AuthorRepository : IRepository<Author>, IAuthorRepository
+    public class AuthorRepository : Repository<Author>,IAuthorRepository
     {
 
         private readonly ApplicationDBContext _db;
@@ -14,9 +14,13 @@ namespace BookStoreAPI.Repository
         {
             _db = db;
         }
-        public Task UpdateAsync(Author entity)
+
+        public async Task<Author> UpdateAsync(Author entity)
         {
-            throw new NotImplementedException();
+            entity.UpdatedDate = DateTime.Now;
+            _db.Update(entity);
+            await _db.SaveChangesAsync();
+            return entity;
         }
     }
 }

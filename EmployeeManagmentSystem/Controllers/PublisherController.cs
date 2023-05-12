@@ -41,7 +41,7 @@ namespace BookStoreAPI.Controllers
                 IEnumerable<PublisherDTO> pub = _mapper.Map<List<PublisherDTO>>(await _dbPublisher.GetAllAsync());
                 responses.IsSuccess = true;
                 responses.Result = pub;
-               
+                responses.StatusCode = HttpStatusCode.OK;
 
 
                 return Ok(responses);
@@ -61,6 +61,9 @@ namespace BookStoreAPI.Controllers
         //======================== Get single publisher ======================================
 
         [HttpGet("{id:int}", Name = "Publisher")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
         public async Task<ActionResult<APIResponses>> GetPublisher(int id)
         {
             try
@@ -97,7 +100,10 @@ namespace BookStoreAPI.Controllers
         //========================== Create Publisher ==========================================
 
         [HttpPost]
-    public async Task<ActionResult<APIResponses>> CreatePublisher([FromBody]PublisherCreateDTO dto)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        public async Task<ActionResult<APIResponses>> CreatePublisher([FromBody]PublisherCreateDTO dto)
 
         {
 
@@ -134,6 +140,9 @@ namespace BookStoreAPI.Controllers
         //=========================Update Publisher info ===================================================
 
         [HttpPut]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
         public async Task<ActionResult<APIResponses>> UpdatePublisher(int id,[FromBody]PublisherUpdateDTO dto)
         {
             try
@@ -166,6 +175,8 @@ namespace BookStoreAPI.Controllers
         //===========================================================================================================================
         //==================================== Delete the publisher ========================================================
         [HttpDelete]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<APIResponses>> RemovePublisher(int Id)
         {
             try

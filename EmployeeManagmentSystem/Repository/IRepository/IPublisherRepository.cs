@@ -4,7 +4,7 @@ namespace BookStoreAPI.Repository.IRepository
 {
     public interface IPublisherRepository : IRepository<Publisher>
     {
-        Task<Publisher> Update(Publisher entity);
+        Task<Publisher> UpdateAsync(Publisher entity);
 
     }
 }

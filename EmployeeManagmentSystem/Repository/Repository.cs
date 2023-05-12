@@ -54,10 +54,10 @@ namespace BookStoreAPI.Repository
              await _db.SaveChangesAsync();
         }
 
-        public async Task UpdateAsync(T entity)
+       /* public async Task UpdateAsync(T entity)
         {
             dbSet.Update(entity);
             await SaveAsync();
-        }
+        }*/
     }
 }

@@ -4,6 +4,7 @@ using BookStoreAPI.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BookStoreAPI.Migrations
 {
     [DbContext(typeof(ApplicationDBContext))]
-    partial class ApplicationDBContextModelSnapshot : ModelSnapshot
+    [Migration("20230512193401_updatedBooksTableColoumnNames")]
+    partial class updatedBooksTableColoumnNames
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -104,36 +107,11 @@ namespace BookStoreAPI.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedDate = new DateTime(2023, 5, 13, 1, 12, 41, 815, DateTimeKind.Local).AddTicks(2627),
+                            CreatedDate = new DateTime(2023, 5, 13, 1, 4, 1, 493, DateTimeKind.Local).AddTicks(8243),
                             Email = "Test@gmail.com",
                             Name = "Test",
-                            UpdatedDate = new DateTime(2023, 5, 13, 1, 12, 41, 815, DateTimeKind.Local).AddTicks(2642)
+                            UpdatedDate = new DateTime(2023, 5, 13, 1, 4, 1, 493, DateTimeKind.Local).AddTicks(8253)
                         });
-                });
-
-            modelBuilder.Entity("BookStoreAPI.Model.User", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Email")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Password")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Role")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("BookStoreAPI.Model.Books", b =>

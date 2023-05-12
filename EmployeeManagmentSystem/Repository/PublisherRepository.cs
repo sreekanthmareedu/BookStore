@@ -13,9 +13,12 @@ namespace BookStoreAPI.Repository
         {
             _db = db;
         }
-        public Task<Publisher> Update(Publisher entity)
+        public async Task<Publisher> UpdateAsync(Publisher entity)
         {
-            throw new NotImplementedException();
+            entity.UpdatedDate = DateTime.Now;
+            _db.Update(entity);
+            await _db.SaveChangesAsync();
+            return entity;
         }
     }
 }

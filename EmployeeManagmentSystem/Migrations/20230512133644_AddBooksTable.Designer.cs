@@ -4,6 +4,7 @@ using BookStoreAPI.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BookStoreAPI.Migrations
 {
     [DbContext(typeof(ApplicationDBContext))]
-    partial class ApplicationDBContextModelSnapshot : ModelSnapshot
+    [Migration("20230512133644_AddBooksTable")]
+    partial class AddBooksTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -52,26 +55,26 @@ namespace BookStoreAPI.Migrations
                     b.Property<int>("Id")
                         .HasColumnType("int");
 
+                    b.Property<int>("Author")
+                        .HasColumnType("int");
+
                     b.Property<string>("ISBN")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("PublicationYear")
                         .HasColumnType("int");
 
+                    b.Property<int>("Publisher")
+                        .HasColumnType("int");
+
                     b.Property<string>("Title")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("authors")
-                        .HasColumnType("int");
-
-                    b.Property<int>("publishers")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("authors");
+                    b.HasIndex("Author");
 
-                    b.HasIndex("publishers");
+                    b.HasIndex("Publisher");
 
                     b.ToTable("Books");
                 });
@@ -104,49 +107,24 @@ namespace BookStoreAPI.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedDate = new DateTime(2023, 5, 13, 1, 12, 41, 815, DateTimeKind.Local).AddTicks(2627),
+                            CreatedDate = new DateTime(2023, 5, 12, 19, 6, 44, 8, DateTimeKind.Local).AddTicks(4769),
                             Email = "Test@gmail.com",
                             Name = "Test",
-                            UpdatedDate = new DateTime(2023, 5, 13, 1, 12, 41, 815, DateTimeKind.Local).AddTicks(2642)
+                            UpdatedDate = new DateTime(2023, 5, 12, 19, 6, 44, 8, DateTimeKind.Local).AddTicks(4780)
                         });
-                });
-
-            modelBuilder.Entity("BookStoreAPI.Model.User", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Email")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Password")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Role")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("BookStoreAPI.Model.Books", b =>
                 {
                     b.HasOne("BookStoreAPI.Model.Author", "author")
                         .WithMany()
-                        .HasForeignKey("authors")
+                        .HasForeignKey("Author")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("BookStoreAPI.Model.Publisher", "publisher")
                         .WithMany()
-                        .HasForeignKey("publishers")
+                        .HasForeignKey("Publisher")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

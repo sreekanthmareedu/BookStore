@@ -1,6 +1,7 @@
-﻿namespace BookStoreAPI.Model.DTO
+﻿namespace BookStoreAPI.Model.DTO.UserDTO
 {
     public class UserUpdateDTO
     {
+
     }
 }
