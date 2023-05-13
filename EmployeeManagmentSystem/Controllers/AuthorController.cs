@@ -77,7 +77,7 @@ namespace BookStoreAPI.Controllers
                 if (author == null)
                 {
                     responses.Result = "Invalid ID";
-                    responses.StatusCode = HttpStatusCode.OK;
+                    responses.StatusCode = HttpStatusCode.NoContent;
                     return Ok(responses);
                    
                 }
@@ -114,6 +114,8 @@ namespace BookStoreAPI.Controllers
 
                 if (dto == null)
                 {
+                    ModelState.AddModelError("Custom Error", "Invalid Details");
+                    return BadRequest(ModelState);
 
                 }
                 if (await _dbAuthor.GetAsync(u => u.Name.ToLower() == dto.Name.ToLower()) != null)

@@ -14,13 +14,13 @@ namespace BookStoreAPI.Model
 
 
         [ForeignKey("author")]
-        public int authors { get; set; }
+        public int AuthorID { get; set; }
 
         public Author author { get; set; }
 
        
         [ForeignKey("publisher")]
-        public int publishers { get; set; }
+        public int PublisherID{ get; set; }
 
         public Publisher publisher { get; set; }
 

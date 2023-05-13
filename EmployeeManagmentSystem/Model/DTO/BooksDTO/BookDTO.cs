@@ -12,11 +12,11 @@ namespace BookStoreAPI.Model.DTO.BooksDTO
 
 
         [Required]
-        public int Author { get; set; }
+        public int AuthorID { get; set; }
 
 
         [Required]
-        public int Publisher { get; set; }
+        public int PublisherID { get; set; }
 
         public string ISBN { get; set; }
 

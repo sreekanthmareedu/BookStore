@@ -21,7 +21,7 @@ namespace BookStoreAPI.Controllers
 
 
 
-        public BookController(IMapper mapper, IAuthorRepository dbAuthor ,IPublisherRepository dbPublisher, IBookRepository dbBook)
+        public BookController(IMapper mapper, IAuthorRepository dbAuthor, IPublisherRepository dbPublisher, IBookRepository dbBook)
         {
             _mapper = mapper;
             _dbAuthor = dbAuthor;
@@ -66,7 +66,7 @@ namespace BookStoreAPI.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        
+
         public async Task<ActionResult<APIResponses>> GetBook(int id)
         {
             try
@@ -86,7 +86,7 @@ namespace BookStoreAPI.Controllers
                     responses.Result = "Invalid ID";
                     responses.StatusCode = HttpStatusCode.OK;
                     return Ok(responses);
-                   
+
                 }
                 responses.Result = _mapper.Map<BookDTO>(book);
                 responses.StatusCode = HttpStatusCode.OK;
@@ -111,8 +111,8 @@ namespace BookStoreAPI.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status201Created)]
-       
-        public async Task<ActionResult<APIResponses>> CreateBook([FromBody]BookCreateDTO dto)
+
+        public async Task<ActionResult<APIResponses>> CreateBook([FromBody] BookCreateDTO dto)
 
         {
 
@@ -121,32 +121,51 @@ namespace BookStoreAPI.Controllers
 
                 if (dto == null)
                 {
-
+                    ModelState.AddModelError("Custom Error", "Invalid details");
+                    return BadRequest(ModelState);
                 }
                 if (await _dbBook.GetAsync(u => u.Id == dto.Id) != null)
                 {
                     ModelState.AddModelError("Custom Error", "Book already Exist");
                     return BadRequest(ModelState);
                 }
-                var PublisherID = await _dbPublisher.GetAsync(u=>u.Id == dto.publishers);
-                var AuthorID = await _dbAuthor.GetAsync(u=>u.Id==dto.authors);
+                var publisherId = await _dbPublisher.GetAsync(u => u.Id == dto.PublisherID);
+                var authorId = await _dbAuthor.GetAsync(u => u.Id == dto.AuthorID);
 
-        
-                if(PublisherID == null)
+
+                if (publisherId == null)
                 {
                     ModelState.AddModelError("Custom Error", "PublisherID is Invalid");
                     return BadRequest(ModelState);
                 }
-                if (AuthorID == null)
+                if (authorId == null)
                 {
                     ModelState.AddModelError("Custom Error", "AuthorID is Invalid");
                     return BadRequest(ModelState);
                 }
 
-                Books book =  _mapper.Map<Books>(dto);
-                
+                  Books book =  _mapper.Map<Books>(dto);
+                /*Books book = new()
+                {
+                    Id = dto.Id,
+                    author = authorId,
+                    publisher = publisherId,
+                    Title = dto.Title,
+                    ISBN = dto.ISBN,
+                    PublicationYear = dto.PublicationYear,
+
+                };*/
+
                 await _dbBook.CreateAsync(book);
+                /*BookDTO bookDto = new()
+                {
+
+                    Id = book.Id,
+                    Author =
+
+                };*/
                 responses.Result = _mapper.Map<BookDTO>(book);
+                
                 responses.StatusCode = HttpStatusCode.OK;
                 return CreatedAtRoute("Book", new { id = dto.Id }, responses);
             }
@@ -180,12 +199,12 @@ namespace BookStoreAPI.Controllers
                     return BadRequest(responses);
 
                 }
-                if (await _dbPublisher.GetAsync(u => u.Id == dto.Publisher) == null)
+                if (await _dbPublisher.GetAsync(u => u.Id == dto.PublisherID) == null)
                 {
                     ModelState.AddModelError("Custom Error", "PublisherID is Invalid");
                     return BadRequest(ModelState);
                 }
-                if (await _dbAuthor.GetAsync(u => u.Id == dto.Author) == null)
+                if (await _dbAuthor.GetAsync(u => u.Id == dto.AuthorID) == null)
                 {
                     ModelState.AddModelError("Custom Error", "AuthorID is Invalid");
                     return BadRequest(ModelState);
@@ -193,11 +212,11 @@ namespace BookStoreAPI.Controllers
                 Books book = _mapper.Map<Books>(dto);
 
                 await _dbBook.UpdateAsync(book);
-                
+
                 responses.StatusCode = HttpStatusCode.NoContent;
                 responses.Result = "Book with Id : " + id + "  Updated successfully";
                 return Ok(responses);
-                
+
 
             }
             catch (Exception ex)
@@ -213,7 +232,7 @@ namespace BookStoreAPI.Controllers
         [HttpDelete]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        
+
 
         public async Task<ActionResult<APIResponses>> RemoveBook(int Id)
         {
