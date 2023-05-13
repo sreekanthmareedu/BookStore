@@ -10,7 +10,7 @@ using System.Text;
 
 namespace BookStoreAPI.Repository
 {
-    public class UserRepository  : IUserRepository
+    public class UserRepository  : Repository<User> , IUserRepository
     {
         private readonly ApplicationDBContext _db;
 
@@ -20,7 +20,8 @@ namespace BookStoreAPI.Repository
 
 
 
-        public UserRepository(ApplicationDBContext db, IMapper mapper, IConfiguration configuration) { 
+        public UserRepository(ApplicationDBContext db, IMapper mapper, IConfiguration configuration): base(db)
+        { 
         
         _db = db;
         _mapper  = mapper;
@@ -92,5 +93,14 @@ namespace BookStoreAPI.Repository
 
             
         }
+
+        public async Task<User> UpdateAsync(User entity)
+        {
+            
+            _db.Update(entity);
+            await _db.SaveChangesAsync();
+            return entity;
+        }
+
     }
 }

@@ -25,6 +25,8 @@ namespace BookStoreAPI.MappingConfig
 
 
             CreateMap<User, RegistrationDTO>().ReverseMap();
+            CreateMap<User,UserDTO>().ReverseMap();
+            CreateMap<User,UserUpdateDTO>().ReverseMap();
 
 
 
