@@ -32,6 +32,9 @@ namespace BookStoreAPI.Controllers
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+       
+
         public async Task<ActionResult<APIResponses>> GetAllPublisher()
         {
             try
@@ -64,6 +67,9 @@ namespace BookStoreAPI.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        
+
         public async Task<ActionResult<APIResponses>> GetPublisher(int id)
         {
             try
@@ -103,12 +109,24 @@ namespace BookStoreAPI.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+
         public async Task<ActionResult<APIResponses>> CreatePublisher([FromBody]PublisherCreateDTO dto)
 
         {
 
             try
             {
+                if (!ModelState.IsValid)
+                {
+
+
+
+
+                    return BadRequest(ModelState);
+
+                }
 
                 if (dto == null)
                 {
@@ -143,10 +161,22 @@ namespace BookStoreAPI.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+
         public async Task<ActionResult<APIResponses>> UpdatePublisher(int id,[FromBody]PublisherUpdateDTO dto)
         {
             try
             {
+                if (!ModelState.IsValid)
+                {
+
+
+
+
+                    return BadRequest(ModelState);
+
+                }
                 if (id == null || (dto.Id != id))
                 {
                     return BadRequest();
@@ -177,6 +207,9 @@ namespace BookStoreAPI.Controllers
         [HttpDelete]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+
         public async Task<ActionResult<APIResponses>> RemovePublisher(int Id)
         {
             try

@@ -31,7 +31,8 @@ namespace BookStoreAPI.Repository
 
         public bool IsUniqueUser(string username)
         {
-           var user = _db.Users.FirstOrDefault(u=>u.Name.ToLower() == username.ToLower());
+           var user = _db.Users.FirstOrDefault(u=>u.Email.ToLower() == username.ToLower());
+            
             if(user == null)
             {
                 return true;

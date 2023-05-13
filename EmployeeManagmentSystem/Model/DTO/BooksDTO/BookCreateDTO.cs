@@ -5,7 +5,7 @@ namespace BookStoreAPI.Model.DTO.BooksDTO
 {
     public class BookCreateDTO
     {
-        
+        [Required]
         public int Id { get; set; }
 
         public string Title { get; set; }

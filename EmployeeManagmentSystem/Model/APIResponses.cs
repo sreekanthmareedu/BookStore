@@ -4,11 +4,11 @@ namespace BookStoreAPI.Model
 {
     public class APIResponses
     {
-        /*public APIResponses() {
+        public APIResponses() {
 
 
             ErrorMessage = new List<string>();
-                }*/
+                }
         public HttpStatusCode StatusCode { get; set; }
 
         public bool IsSuccess { get; set; } = true;

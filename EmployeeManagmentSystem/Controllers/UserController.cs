@@ -33,6 +33,9 @@ namespace BookStoreAPI.Controllers
         //============================== Authentication ========================================================
 
         [HttpPost("Login")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<ActionResult> Login([FromBody] UserRequestDTO dto)
         {
             var response = await _user.login(dto);
@@ -53,15 +56,28 @@ namespace BookStoreAPI.Controllers
 
         }
         [HttpPost("Create")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<IActionResult> CreateUser([FromBody] RegistrationDTO dto)
         {
+            if (!ModelState.IsValid)
+            {
 
-            bool uniqueName = _user.IsUniqueUser(dto.Name);
+
+
+
+                return BadRequest(ModelState);
+
+            }
+
+            bool uniqueName = _user.IsUniqueUser(dto.Email);
             if (!uniqueName)
             {
                 responses.IsSuccess = false;
                 responses.StatusCode = HttpStatusCode.BadRequest;
-                responses.ErrorMessage.Add("user name already exist");
+                responses.ErrorMessage.Add("Email ID already exist");
                 return BadRequest(responses);
             }
             var userinfo = await _user.Register(dto);
@@ -81,16 +97,36 @@ namespace BookStoreAPI.Controllers
         }
 
         [HttpPut]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<ActionResult<APIResponses>> UpdateUser(int id, [FromBody] UserUpdateDTO dto)
         {
             try
             {
+                if (!ModelState.IsValid)
+                {
+
+
+
+
+                    return BadRequest(ModelState);
+
+                }
                 if (id == null || (dto.Id != id))
                 {
                     responses.Result = "Invalid ID";
                     responses.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(responses);
 
+                }
+                if (await _user.GetAsync(u => u.Email.ToLower() == dto.Email.ToLower()) != null )
+                {
+                    responses.Result = "Mail Id Already Registered ";
+                    responses.StatusCode = HttpStatusCode.BadRequest;
+                    responses.IsSuccess = false;
+                    return BadRequest(responses);
                 }
                 User users = _mapper.Map<User>(dto);
 
@@ -111,6 +147,10 @@ namespace BookStoreAPI.Controllers
         }
 
         [HttpGet("id")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        
         public async Task<ActionResult<APIResponses>> GetUser(int id)
         {
             try
@@ -148,20 +188,24 @@ namespace BookStoreAPI.Controllers
         }
 
         [HttpDelete]
-        public async Task<ActionResult<APIResponses>> RemoveUser(string Name)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        public async Task<ActionResult<APIResponses>> RemoveUser(int id)
         {
             try
             {
-                if (Name == null)
+                if (id == null)
                 {
-                    responses.Result = "Invalid Name";
+                    responses.Result = "Invalid Id";
                     responses.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(responses);
                 }
-                User users = await _user.GetAsync(u => u.Name == Name);
+                User users = await _user.GetAsync(u => u.Id == id);
                 if (users == null)
                 {
-                    responses.Result = "Invalid User Name";
+                    responses.Result = "Invalid User Id";
                     responses.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(responses);
 
@@ -170,7 +214,7 @@ namespace BookStoreAPI.Controllers
                 await _user.RemoveAsync(users);
                 responses.IsSuccess = true;
                 responses.StatusCode = HttpStatusCode.NoContent;
-                responses.Result = "User with Name :" + Name + "  deleted successfully";
+                responses.Result = "User with Id :" + id + "  deleted successfully";
                 return Ok(responses);
             }
             catch (Exception ex)
@@ -189,6 +233,7 @@ namespace BookStoreAPI.Controllers
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<ActionResult<APIResponses>> GetAllAuthor()
         {
             try

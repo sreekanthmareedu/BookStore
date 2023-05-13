@@ -30,6 +30,8 @@ namespace BookStoreAPI.Controllers
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+       
         public async Task<ActionResult<APIResponses>> GetAllAuthor()
         {
             try
@@ -59,7 +61,9 @@ namespace BookStoreAPI.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+       
+
         public async Task<ActionResult<APIResponses>> GetPublisher(int id)
         {
             try
@@ -104,13 +108,23 @@ namespace BookStoreAPI.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status201Created)]
-       
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<ActionResult<APIResponses>> CreateAuthor([FromBody] AuthorCreateDTO dto)
 
         {
 
             try
             {
+                if (!ModelState.IsValid)
+                {
+                    
+                    
+                    
+                    
+                    return BadRequest(ModelState);
+
+                }
 
                 if (dto == null)
                 {
@@ -133,6 +147,7 @@ namespace BookStoreAPI.Controllers
             {
 
                 responses.IsSuccess = false;
+
                 responses.ErrorMessage = new List<string> { ex.Message };
             }
             return responses;
@@ -147,11 +162,22 @@ namespace BookStoreAPI.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
 
         public async Task<ActionResult<APIResponses>> UpdateAuthor(int id, [FromBody] AuthorUpdateDTO dto)
         {
             try
             {
+                if (!ModelState.IsValid)
+                {
+
+
+
+
+                    return BadRequest(ModelState);
+
+                }
                 if (id == null || (dto.Id != id))
                 {
                     responses.Result = "Invalid ID";
@@ -182,7 +208,10 @@ namespace BookStoreAPI.Controllers
         [HttpDelete]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
 
         public async Task<ActionResult<APIResponses>> RemoveAuthor(int Id)
         {
