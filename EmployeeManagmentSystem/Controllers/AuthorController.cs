@@ -2,6 +2,7 @@
 using BookStoreAPI.Model;
 using BookStoreAPI.Model.DTO;
 using BookStoreAPI.Repository.IRepository;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 
@@ -31,12 +32,12 @@ namespace BookStoreAPI.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-       
+        [Authorize(Roles ="admin")]
         public async Task<ActionResult<APIResponses>> GetAllAuthor()
         {
             try
             {
-                // Publisher publisher = await _dbPublisher.GetAllAsync();
+               
 
                 IEnumerable<AuthorDTO> pub = _mapper.Map<List<AuthorDTO>>(await _dbAuthor.GetAllAsync());
                 responses.StatusCode = HttpStatusCode.OK;
@@ -64,7 +65,7 @@ namespace BookStoreAPI.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
        
 
-        public async Task<ActionResult<APIResponses>> GetPublisher(int id)
+        public async Task<ActionResult<APIResponses>> GetAuthor(int id)
         {
             try
             {
@@ -178,6 +179,7 @@ namespace BookStoreAPI.Controllers
                     return BadRequest(ModelState);
 
                 }
+
                 if (id == null || (dto.Id != id))
                 {
                     responses.Result = "Invalid ID";
@@ -185,6 +187,22 @@ namespace BookStoreAPI.Controllers
                     return BadRequest(responses);
 
                 }
+
+                var test = await _dbAuthor.GetAsync(u => u.Id == id);
+                if (test.Name != dto.Name)
+                {
+                    if (await _dbAuthor.GetAsync(u => u.Name.ToLower() == dto.Name.ToLower()) != null)
+                    {
+                        ModelState.AddModelError("Custom Error", "Name already Exist");
+                        return BadRequest(ModelState);
+                    }
+
+                    
+                }
+                
+
+                
+                
                 Author author = _mapper.Map<Author>(dto);
 
                 await _dbAuthor.UpdateAsync(author);
@@ -213,6 +231,7 @@ namespace BookStoreAPI.Controllers
         
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
 
+       
         public async Task<ActionResult<APIResponses>> RemoveAuthor(int Id)
         {
             try

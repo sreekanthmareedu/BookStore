@@ -65,7 +65,7 @@ namespace BookStoreAPI.Repository
                 }),
 
                 Expires = DateTime.UtcNow.AddDays(4),
-                SigningCredentials = new(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256)
+                SigningCredentials = new(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
 
             };
             var token = tokenHandler.CreateToken(tokenDescriptor);

@@ -40,7 +40,7 @@ namespace BookStoreAPI.Repository
             {
                 query = query.Where(filter);
             }
-            return await query.FirstOrDefaultAsync();
+            return await query.AsNoTracking().FirstOrDefaultAsync();
         }
 
         public async Task RemoveAsync(T entity)

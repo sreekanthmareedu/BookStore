@@ -84,7 +84,9 @@ namespace BookStoreAPI.Controllers
 
                 if (publisher == null)
                 {
-                    return NoContent();
+                    responses.Result = "Invalid ID";
+                    responses.StatusCode = HttpStatusCode.NoContent;
+                    return Ok(responses);
                 }
                 responses.Result = _mapper.Map<PublisherDTO>(publisher);
                 responses.StatusCode = HttpStatusCode.OK;
@@ -130,6 +132,8 @@ namespace BookStoreAPI.Controllers
 
                 if (dto == null)
                 {
+                    ModelState.AddModelError("Custom Error", "Invalid Details");
+                    return BadRequest(ModelState);
 
                 }
                 if (await _dbPublisher.GetAsync(u => u.Name.ToLower() == dto.Name.ToLower()) != null)
@@ -179,9 +183,25 @@ namespace BookStoreAPI.Controllers
                 }
                 if (id == null || (dto.Id != id))
                 {
-                    return BadRequest();
+                    responses.Result = "Invalid ID";
+                    responses.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(responses);
 
                 }
+
+                var test = await _dbPublisher.GetAsync(u => u.Id == id);
+                if (test.Name != dto.Name)
+                {
+                    if (await _dbPublisher.GetAsync(u => u.Name.ToLower() == dto.Name.ToLower()) != null)
+                    {
+                        ModelState.AddModelError("Custom Error", "Name already Exist");
+                        return BadRequest(ModelState);
+                    }
+
+
+                }
+
+
                 Publisher publisher = _mapper.Map<Publisher>(dto);
 
 
@@ -216,12 +236,16 @@ namespace BookStoreAPI.Controllers
             {
                 if (Id <= 0)
                 {
-                    return BadRequest();
+                    responses.Result = "Invalid ID";
+                    responses.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(responses);
                 }
                 Publisher publisher = await _dbPublisher.GetAsync(u => u.Id == Id);
                 if (publisher == null)
                 {
-                    return BadRequest();
+                    responses.Result = "Invalid ID";
+                    responses.StatusCode = HttpStatusCode.NoContent;
+                    return Ok(responses);
                 }
                 await _dbPublisher.RemoveAsync(publisher);
                 responses.IsSuccess = true;

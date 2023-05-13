@@ -135,7 +135,9 @@ namespace BookStoreAPI.Controllers
                     ModelState.AddModelError("Custom Error", "Invalid details");
                     return BadRequest(ModelState);
                 }
-                if (await _dbBook.GetAsync(u => u.Id == dto.Id) != null)
+                if ((await _dbBook.GetAsync(u => u.Id == dto.Id) != null) || 
+                    (await _dbBook.GetAsync(u=>u.Title.ToLower() == dto.Title.ToLower()) != null)
+                    )
                 {
                     ModelState.AddModelError("Custom Error", "Book already Exist");
                     return BadRequest(ModelState);
@@ -156,16 +158,7 @@ namespace BookStoreAPI.Controllers
                 }
 
                   Books book =  _mapper.Map<Books>(dto);
-                /*Books book = new()
-                {
-                    Id = dto.Id,
-                    author = authorId,
-                    publisher = publisherId,
-                    Title = dto.Title,
-                    ISBN = dto.ISBN,
-                    PublicationYear = dto.PublicationYear,
-
-                };*/
+               
 
                 await _dbBook.CreateAsync(book);
                 
@@ -209,6 +202,19 @@ namespace BookStoreAPI.Controllers
                     return BadRequest(ModelState);
 
                 }
+
+                var test = await _dbBook.GetAsync(u => u.Id == id);
+                if (test.Title.ToLower() != dto.Title.ToLower())
+                {
+                    if (await _dbBook.GetAsync(u => u.Title.ToLower() == dto.Title.ToLower()) != null)
+                    {
+                        ModelState.AddModelError("Custom Error", "Book already Exist");
+                        return BadRequest(ModelState);
+                    }
+
+
+                }
+                
                 if (id == null || (dto.Id != id))
                 {
                     responses.Result = "Invalid ID";
