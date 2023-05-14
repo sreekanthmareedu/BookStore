@@ -3,8 +3,10 @@ using Azure;
 using BookStoreAPI.Model;
 using BookStoreAPI.Model.DTO;
 using BookStoreAPI.Repository.IRepository;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
+using System.Data;
 using System.Net;
 using System.Net.Security;
 
@@ -229,7 +231,7 @@ namespace BookStoreAPI.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
-
+        [Authorize(Roles = "admin")]
         public async Task<ActionResult<APIResponses>> RemovePublisher(int Id)
         {
             try

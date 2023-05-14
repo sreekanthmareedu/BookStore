@@ -3,7 +3,9 @@ using BookStoreAPI.Model;
 using BookStoreAPI.Model.DTO;
 using BookStoreAPI.Model.DTO.BooksDTO;
 using BookStoreAPI.Repository.IRepository;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Data;
 using System.Net;
 
 namespace BookStoreAPI.Controllers
@@ -259,7 +261,7 @@ namespace BookStoreAPI.Controllers
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
 
 
-
+        [Authorize(Roles = "admin")]
         public async Task<ActionResult<APIResponses>> RemoveBook(int Id)
         {
             try

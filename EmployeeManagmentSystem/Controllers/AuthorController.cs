@@ -231,7 +231,7 @@ namespace BookStoreAPI.Controllers
         
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
 
-       
+        [Authorize(Roles ="admin")]
         public async Task<ActionResult<APIResponses>> RemoveAuthor(int Id)
         {
             try

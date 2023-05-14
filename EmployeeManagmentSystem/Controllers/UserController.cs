@@ -3,7 +3,9 @@ using BookStoreAPI.Model;
 using BookStoreAPI.Model.DTO;
 using BookStoreAPI.Model.DTO.UserDTO;
 using BookStoreAPI.Repository.IRepository;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Data;
 using System.Net;
 
 namespace BookStoreAPI.Controllers
@@ -192,6 +194,7 @@ namespace BookStoreAPI.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [Authorize(Roles = "admin")]
         public async Task<ActionResult<APIResponses>> RemoveUser(int id)
         {
             try
